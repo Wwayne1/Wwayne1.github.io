@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mac环境配置</title>
+    <url>/2019/12/15/mac%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="mac环境配置"><a href="#mac环境配置" class="headerlink" title="mac环境配置"></a>mac环境配置</h1><p>借由这篇文章改变自己的一个环习惯。可能是因为从小就处在这个信息大爆炸的时代，每次遇到问题的时候，总觉得这个问题可以从网上找到答案，更确切的说，总是想着直接百度搜出答案，显然这种行为是不可取的，但是因为这样确实能解决一部分问题，就养成了这个毛病。</p><p>这次是装一个补全插件的时候，遇到了<strong>pyls not found in $PATH</strong>的问题，我又连报错都没细看，直接往搜索框一丢，结果。。。。。绕了大半月都没解决。<br>再之后心想这问题不能一直存在啊，一细看，妈耶是path环境变量的问题，就麻溜给他解决了。</p><a id="more"></a>
+
+<p>顺便记一下mac下的环境变量相关知识。</p>
+<h2 id="mac系统环境变量加载顺序"><a href="#mac系统环境变量加载顺序" class="headerlink" title="mac系统环境变量加载顺序"></a>mac系统环境变量加载顺序</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">a. /etc/profile</span><br><span class="line">b. /etc/paths</span><br><span class="line">c. ~/.bash_profile</span><br><span class="line">d. ~/.bash_login</span><br><span class="line">e. ~/.profile</span><br><span class="line">f. ~/.bashrc</span><br></pre></td></tr></table></figure>
+<p>其中a和b是系统级别的，系统启动就会加载，其余是用户级别的。c,d,e按照从前往后的顺序读取，如果c文件存在，则后面的几个文件就会被忽略不读了，以此类推。~/.bashrc没有上述规则，它是bash shell打开的时候载入的。这里建议在c中添加环境变量，以下也是以在c中添加环境变量来演示的:</p>
+<h2 id="编辑环境变量"><a href="#编辑环境变量" class="headerlink" title="编辑环境变量"></a>编辑环境变量</h2><p>mac系统中环境变量编辑语法如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 中间使用冒号分隔</span><br><span class="line">export PATH=$PATH:&lt;PATH 1&gt;:&lt;PATH 2&gt;:&lt;PATH 3&gt;:------:&lt;PATH N&gt;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim ~/.bash_profile  //编辑环境变量</span><br><span class="line">source ～/.bash_profile  //更新缓存变量的缓存</span><br><span class="line">source ~/.zshrc          //如果使用的shell是zsh的话还需要更新zsh</span><br></pre></td></tr></table></figure>
+
+<p>示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PYLS=/Users/wayne/Library/Python/2.7/lib/python/site-packages/pyls</span><br><span class="line">export PYLS_HOME=/Users/wayne/Library/Python/2.7/bin</span><br><span class="line">export PATH=$PYLS:$PYLS_HOME:$PATH</span><br></pre></td></tr></table></figure>
+
+<p>完。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>半年记</title>
     <url>/2019/11/17/%E5%8D%8A%E5%B9%B4%E8%AE%B0/</url>
     <content><![CDATA[<h1 id="记2019-4-2019-11"><a href="#记2019-4-2019-11" class="headerlink" title="记2019.4 - 2019.11"></a>记2019.4 - 2019.11</h1><p>  今天是11.17，距离上一篇博客已经有5个月了，离我开始准备找工作也已经有8个月了。那趁着今天将迁移hexo之后，好好回顾下这段时间的生活吧。</p><p>  先说说变化吧，这半年，变化真的很大很大。从windows到linux到windows再到现在的mac。算是把所有系统都用了一遍。从毫无工程经验，只会写一些100来行的简单算法题，到如今个人开发过几个小项目，参与过分布式架构企业级应用开发，了解团队协同开发的基本流程。从不了解春招秋招，简历投了2.30份都无人问津，到现在能拿到4家offer。这半年，实属不易。</p><a id="more"></a>
