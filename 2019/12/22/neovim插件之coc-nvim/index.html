@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="http://ww1.sinaimg.cn/large/90c0a921ly1g8zusrjr01j20cs0csq43.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="http://ww1.sinaimg.cn/large/90c0a921ly1g8zusrjr01j20cs0csq43.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Wayne" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="很久之前就想写vim相关的东西了，奈何一直都自觉知识储备不够，迟迟没有着笔。最近花了因为看了b站up主theCW有关vim的几期视频，就想着自己也应该尝试去做这些事，整理、记录自己所学的知识。这篇文章就想写一下配置coc.nvim这个插件主要注意的地方。neovim是一个基于vim的文本编辑器，我把它理解成vim的一个发行版（不知道这样理解对不对。。）以下为正文">
+<meta name="keywords" content="vim插件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="neovim插件之coc.nvim">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;22&#x2F;neovim%E6%8F%92%E4%BB%B6%E4%B9%8Bcoc-nvim&#x2F;index.html">
+<meta property="og:site_name" content="Wayne">
+<meta property="og:description" content="很久之前就想写vim相关的东西了，奈何一直都自觉知识储备不够，迟迟没有着笔。最近花了因为看了b站up主theCW有关vim的几期视频，就想着自己也应该尝试去做这些事，整理、记录自己所学的知识。这篇文章就想写一下配置coc.nvim这个插件主要注意的地方。neovim是一个基于vim的文本编辑器，我把它理解成vim的一个发行版（不知道这样理解对不对。。）以下为正文">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-22T12:00:21.504Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2019/12/22/neovim%E6%8F%92%E4%BB%B6%E4%B9%8Bcoc-nvim/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>neovim插件之coc.nvim | Wayne</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wayne</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">麤缯大布裹生涯，腹有诗书气自华</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/22/neovim%E6%8F%92%E4%BB%B6%E4%B9%8Bcoc-nvim/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="http://ww1.sinaimg.cn/large/90c0a921ly1g8zusrjr01j20cs0csq43.jpg">
+      <meta itemprop="name" content="Wayne">
+      <meta itemprop="description" content="Wwayne">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wayne">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          neovim插件之coc.nvim
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-12-22 18:46:32 / 修改时间：20:00:21" itemprop="dateCreated datePublished" datetime="2019-12-22T18:46:32+08:00">2019-12-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/vim/" itemprop="url" rel="index">
+                    <span itemprop="name">vim</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>很久之前就想写vim相关的东西了，奈何一直都自觉知识储备不够，迟迟没有着笔。最近花了因为看了b站up主theCW有关vim的几期视频，<br>就想着自己也应该尝试去做这些事，整理、记录自己所学的知识。</p><p>这篇文章就想写一下配置coc.nvim这个插件主要注意的地方。neovim是一个基于vim的文本编辑器，我把它理解成vim的一个发行版<br>（不知道这样理解对不对。。）以下为正文</p><a id="more"></a>
+
+<hr>
+<h1 id="coc-nvim-安装方法及简介"><a href="#coc-nvim-安装方法及简介" class="headerlink" title="coc.nvim 安装方法及简介"></a>coc.nvim 安装方法及简介</h1><h2 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h2><p>vimrc中添加下面两行之后再运行PlugInstall就可以了（前置条件需要先安装Plug)</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">" Auto Complete</span></span><br><span class="line">Plug <span class="string">'neoclide/coc.nvim'</span>, &#123;<span class="string">'branch'</span>: <span class="string">'release'</span>&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>官方文档是这样介绍coc.nvim的:</p>
+<blockquote>
+<p>Coc is an intellisense engine for Vim/NeoVim.</p>
+</blockquote>
+<p>也就是说官方将它定义为一个智能感知引擎。目前我是将它作为一个智能补全的插件来使用的（都怪YCM安装太麻烦了！！）</p>
+<h3 id="my-coc-nvim-config"><a href="#my-coc-nvim-config" class="headerlink" title="my coc.nvim config"></a>my coc.nvim config</h3><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">" ===</span></span><br><span class="line"><span class="comment">" === coc</span></span><br><span class="line"><span class="comment">" ===</span></span><br><span class="line"><span class="keyword">xmap</span> <span class="symbol">&lt;leader&gt;</span><span class="keyword">f</span> <span class="symbol">&lt;Plug&gt;</span>(coc-format-selected)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;leader&gt;</span><span class="keyword">f</span> <span class="symbol">&lt;Plug&gt;</span>(coc-format-selected)</span><br><span class="line"><span class="comment">" color for coc-diagnostic</span></span><br><span class="line"><span class="keyword">hi</span> link CocErrorSign Error</span><br><span class="line"><span class="keyword">hi</span> link CocWarningSign ALEWarningSign</span><br><span class="line"><span class="comment">" use &lt;tab&gt; for trigger completion and navigate to the next complete item</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>! <span class="title">s</span>:<span class="title">check_back_space</span><span class="params">()</span> <span class="title">abort</span></span></span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">col</span> = <span class="keyword">col</span>(<span class="string">'.'</span>) - <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> !col || <span class="built_in">getline</span>(<span class="string">'.'</span>)[<span class="keyword">col</span> - <span class="number">1</span>]	=~ <span class="string">'\s'</span></span><br><span class="line"><span class="keyword">endfunction</span></span><br><span class="line"><span class="keyword">inoremap</span> <span class="symbol">&lt;silent&gt;</span><span class="symbol">&lt;expr&gt;</span> <span class="symbol">&lt;Tab&gt;</span></span><br><span class="line">			\ <span class="built_in">pumvisible</span>() ? <span class="string">"\&lt;C-n&gt;"</span> :</span><br><span class="line">			\ <span class="symbol">&lt;SID&gt;</span>check_back_space() ? <span class="string">"\&lt;Tab&gt;"</span> :</span><br><span class="line">			\ coc#refresh()</span><br><span class="line"><span class="keyword">inoremap</span> <span class="symbol">&lt;expr&gt;</span> <span class="symbol">&lt;S-Tab&gt;</span> <span class="built_in">pumvisible</span>() ? <span class="string">"\&lt;C-p&gt;"</span> : <span class="string">"\&lt;S-Tab&gt;"</span></span><br><span class="line"><span class="keyword">inoremap</span> <span class="symbol">&lt;silent&gt;</span><span class="symbol">&lt;expr&gt;</span> <span class="symbol">&lt;c-space&gt;</span> coc#refresh()</span><br><span class="line"></span><br><span class="line"><span class="comment">" Use `[c` and `]c` to navigate diagnostics</span></span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> [<span class="keyword">c</span> <span class="symbol">&lt;Plug&gt;</span>(coc-diagnostic-<span class="keyword">prev</span>)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> ]<span class="keyword">c</span> <span class="symbol">&lt;Plug&gt;</span>(coc-diagnostic-<span class="keyword">next</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">" Remap keys for gotos</span></span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> gd <span class="symbol">&lt;Plug&gt;</span>(coc-definition)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> gy <span class="symbol">&lt;Plug&gt;</span>(coc-<span class="built_in">type</span>-definition)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> gi <span class="symbol">&lt;Plug&gt;</span>(coc-implementation)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> <span class="keyword">gr</span> <span class="symbol">&lt;Plug&gt;</span>(coc-references)</span><br><span class="line"></span><br><span class="line"><span class="comment">" Use D to show documentation in preview window</span></span><br><span class="line"><span class="keyword">nnoremap</span> <span class="symbol">&lt;silent&gt;</span> D :<span class="keyword">call</span> <span class="symbol">&lt;SID&gt;</span>show_documentation()<span class="symbol">&lt;CR&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span>! <span class="title">s</span>:<span class="title">show_documentation</span><span class="params">()</span></span></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">index</span>([<span class="string">'vim'</span>,<span class="string">'help'</span>], &amp;<span class="keyword">filetype</span>) &gt;= <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">execute</span> <span class="string">'h '</span>.<span class="built_in">expand</span>(<span class="string">'&lt;cword&gt;'</span>)</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">call</span> CocAction(<span class="string">'doHover'</span>)</span><br><span class="line">  <span class="keyword">endif</span></span><br><span class="line"><span class="keyword">endfunction</span></span><br><span class="line"></span><br><span class="line"><span class="comment">" Remap for rename current word 重命名（同时更改所有引用）</span></span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;leader&gt;</span>rn <span class="symbol">&lt;Plug&gt;</span>(coc-<span class="built_in">rename</span>)</span><br></pre></td></tr></table></figure>
+
+<p>以上为我的coc.nvim的具体配置，具体的功能看注释就好了，强烈建议自己先尝试一遍再copy</p>
+<h1 id="安装注意事项"><a href="#安装注意事项" class="headerlink" title="安装注意事项"></a>安装注意事项</h1><p>coc的补全是依赖语言自身的补全规则的，所以需要安装相应语言的language server。以python和c/c++举例：</p>
+<h2 id="python"><a href="#python" class="headerlink" title="python"></a>python</h2><p>python需要先安装pyls（python language server)并且需要正确配置到<strong>path</strong>系统环境配置中（划重点！！！）</p>
+<p>否则会报以下的错误：</p>
+<blockquote>
+<p>pyls not found in $PATH</p>
+</blockquote>
+<h2 id="c-c"><a href="#c-c" class="headerlink" title="c/c++"></a>c/c++</h2><p>c/c++则需要先安装ccls(C/C++/ObjC language server)，严格的讲，它可以补全c, c++以及Object C三种语言。</p>
+<p>安装完成之后，也需要讲其添加到path环境变量中，具体步骤如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install ccls</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>其实这篇文章，更多的是想写一些自己的感触。这里还是要谢谢the cw这位up主，vim一直以来都是一个我很喜欢的编辑器，<br>但由于其社群不大，网上的文章多为入门（教你hjkl的基本操作），并且自己英语不好，也不喜欢阅读官方文档，对于vim<br>一直是知其然不知其所以然。cw的视频里，让我看到了该怎么去解决一个问题以及官方文档的重要性。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/vim%E6%8F%92%E4%BB%B6/" rel="tag"># vim插件</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/12/15/mac%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" rel="next" title="mac环境配置">
+                  <i class="fa fa-chevron-left"></i> mac环境配置
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#coc-nvim-安装方法及简介"><span class="nav-number">1.</span> <span class="nav-text">coc.nvim 安装方法及简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装方法"><span class="nav-number">1.1.</span> <span class="nav-text">安装方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#my-coc-nvim-config"><span class="nav-number">1.2.1.</span> <span class="nav-text">my coc.nvim config</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装注意事项"><span class="nav-number">2.</span> <span class="nav-text">安装注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#python"><span class="nav-number">2.1.</span> <span class="nav-text">python</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-c"><span class="nav-number">2.2.</span> <span class="nav-text">c/c++</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Wayne"
+      src="http://ww1.sinaimg.cn/large/90c0a921ly1g8zusrjr01j20cs0csq43.jpg">
+  <p class="site-author-name" itemprop="name">Wayne</p>
+  <div class="site-description" itemprop="description">Wwayne</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Wwayne1" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Wwayne1" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wayne</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">28k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">26 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

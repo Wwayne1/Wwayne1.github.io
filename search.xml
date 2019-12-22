@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>neovim插件之coc.nvim</title>
+    <url>/2019/12/22/neovim%E6%8F%92%E4%BB%B6%E4%B9%8Bcoc-nvim/</url>
+    <content><![CDATA[<p>很久之前就想写vim相关的东西了，奈何一直都自觉知识储备不够，迟迟没有着笔。最近花了因为看了b站up主theCW有关vim的几期视频，<br>就想着自己也应该尝试去做这些事，整理、记录自己所学的知识。</p><p>这篇文章就想写一下配置coc.nvim这个插件主要注意的地方。neovim是一个基于vim的文本编辑器，我把它理解成vim的一个发行版<br>（不知道这样理解对不对。。）以下为正文</p><a id="more"></a>
+
+<hr>
+<h1 id="coc-nvim-安装方法及简介"><a href="#coc-nvim-安装方法及简介" class="headerlink" title="coc.nvim 安装方法及简介"></a>coc.nvim 安装方法及简介</h1><h2 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h2><p>vimrc中添加下面两行之后再运行PlugInstall就可以了（前置条件需要先安装Plug)</p>
+<figure class="highlight vim"><table><tr><td class="code"><pre><span class="line"><span class="comment">" Auto Complete</span></span><br><span class="line">Plug <span class="string">'neoclide/coc.nvim'</span>, &#123;<span class="string">'branch'</span>: <span class="string">'release'</span>&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>官方文档是这样介绍coc.nvim的:</p>
+<blockquote>
+<p>Coc is an intellisense engine for Vim/NeoVim.</p>
+</blockquote>
+<p>也就是说官方将它定义为一个智能感知引擎。目前我是将它作为一个智能补全的插件来使用的（都怪YCM安装太麻烦了！！）</p>
+<h3 id="my-coc-nvim-config"><a href="#my-coc-nvim-config" class="headerlink" title="my coc.nvim config"></a>my coc.nvim config</h3><figure class="highlight vim"><table><tr><td class="code"><pre><span class="line"><span class="comment">" ===</span></span><br><span class="line"><span class="comment">" === coc</span></span><br><span class="line"><span class="comment">" ===</span></span><br><span class="line"><span class="keyword">xmap</span> <span class="symbol">&lt;leader&gt;</span><span class="keyword">f</span> <span class="symbol">&lt;Plug&gt;</span>(coc-format-selected)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;leader&gt;</span><span class="keyword">f</span> <span class="symbol">&lt;Plug&gt;</span>(coc-format-selected)</span><br><span class="line"><span class="comment">" color for coc-diagnostic</span></span><br><span class="line"><span class="keyword">hi</span> link CocErrorSign Error</span><br><span class="line"><span class="keyword">hi</span> link CocWarningSign ALEWarningSign</span><br><span class="line"><span class="comment">" use &lt;tab&gt; for trigger completion and navigate to the next complete item</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>! <span class="title">s</span>:<span class="title">check_back_space</span><span class="params">()</span> <span class="title">abort</span></span></span><br><span class="line">	<span class="keyword">let</span> <span class="keyword">col</span> = <span class="keyword">col</span>(<span class="string">'.'</span>) - <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> !col || <span class="built_in">getline</span>(<span class="string">'.'</span>)[<span class="keyword">col</span> - <span class="number">1</span>]	=~ <span class="string">'\s'</span></span><br><span class="line"><span class="keyword">endfunction</span></span><br><span class="line"><span class="keyword">inoremap</span> <span class="symbol">&lt;silent&gt;</span><span class="symbol">&lt;expr&gt;</span> <span class="symbol">&lt;Tab&gt;</span></span><br><span class="line">			\ <span class="built_in">pumvisible</span>() ? <span class="string">"\&lt;C-n&gt;"</span> :</span><br><span class="line">			\ <span class="symbol">&lt;SID&gt;</span>check_back_space() ? <span class="string">"\&lt;Tab&gt;"</span> :</span><br><span class="line">			\ coc#refresh()</span><br><span class="line"><span class="keyword">inoremap</span> <span class="symbol">&lt;expr&gt;</span> <span class="symbol">&lt;S-Tab&gt;</span> <span class="built_in">pumvisible</span>() ? <span class="string">"\&lt;C-p&gt;"</span> : <span class="string">"\&lt;S-Tab&gt;"</span></span><br><span class="line"><span class="keyword">inoremap</span> <span class="symbol">&lt;silent&gt;</span><span class="symbol">&lt;expr&gt;</span> <span class="symbol">&lt;c-space&gt;</span> coc#refresh()</span><br><span class="line"></span><br><span class="line"><span class="comment">" Use `[c` and `]c` to navigate diagnostics</span></span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> [<span class="keyword">c</span> <span class="symbol">&lt;Plug&gt;</span>(coc-diagnostic-<span class="keyword">prev</span>)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> ]<span class="keyword">c</span> <span class="symbol">&lt;Plug&gt;</span>(coc-diagnostic-<span class="keyword">next</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">" Remap keys for gotos</span></span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> gd <span class="symbol">&lt;Plug&gt;</span>(coc-definition)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> gy <span class="symbol">&lt;Plug&gt;</span>(coc-<span class="built_in">type</span>-definition)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> gi <span class="symbol">&lt;Plug&gt;</span>(coc-implementation)</span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;silent&gt;</span> <span class="keyword">gr</span> <span class="symbol">&lt;Plug&gt;</span>(coc-references)</span><br><span class="line"></span><br><span class="line"><span class="comment">" Use D to show documentation in preview window</span></span><br><span class="line"><span class="keyword">nnoremap</span> <span class="symbol">&lt;silent&gt;</span> D :<span class="keyword">call</span> <span class="symbol">&lt;SID&gt;</span>show_documentation()<span class="symbol">&lt;CR&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span>! <span class="title">s</span>:<span class="title">show_documentation</span><span class="params">()</span></span></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">index</span>([<span class="string">'vim'</span>,<span class="string">'help'</span>], &amp;<span class="keyword">filetype</span>) &gt;= <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">execute</span> <span class="string">'h '</span>.<span class="built_in">expand</span>(<span class="string">'&lt;cword&gt;'</span>)</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">call</span> CocAction(<span class="string">'doHover'</span>)</span><br><span class="line">  <span class="keyword">endif</span></span><br><span class="line"><span class="keyword">endfunction</span></span><br><span class="line"></span><br><span class="line"><span class="comment">" Remap for rename current word 重命名（同时更改所有引用）</span></span><br><span class="line"><span class="keyword">nmap</span> <span class="symbol">&lt;leader&gt;</span>rn <span class="symbol">&lt;Plug&gt;</span>(coc-<span class="built_in">rename</span>)</span><br></pre></td></tr></table></figure>
+
+<p>以上为我的coc.nvim的具体配置，具体的功能看注释就好了，强烈建议自己先尝试一遍再copy</p>
+<h1 id="安装注意事项"><a href="#安装注意事项" class="headerlink" title="安装注意事项"></a>安装注意事项</h1><p>coc的补全是依赖语言自身的补全规则的，所以需要安装相应语言的language server。以python和c/c++举例：</p>
+<h2 id="python"><a href="#python" class="headerlink" title="python"></a>python</h2><p>python需要先安装pyls（python language server)并且需要正确配置到<strong>path</strong>系统环境配置中（划重点！！！）</p>
+<p>否则会报以下的错误：</p>
+<blockquote>
+<p>pyls not found in $PATH</p>
+</blockquote>
+<h2 id="c-c"><a href="#c-c" class="headerlink" title="c/c++"></a>c/c++</h2><p>c/c++则需要先安装ccls(C/C++/ObjC language server)，严格的讲，它可以补全c, c++以及Object C三种语言。</p>
+<p>安装完成之后，也需要讲其添加到path环境变量中，具体步骤如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install ccls</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>其实这篇文章，更多的是想写一些自己的感触。这里还是要谢谢the cw这位up主，vim一直以来都是一个我很喜欢的编辑器，<br>但由于其社群不大，网上的文章多为入门（教你hjkl的基本操作），并且自己英语不好，也不喜欢阅读官方文档，对于vim<br>一直是知其然不知其所以然。cw的视频里，让我看到了该怎么去解决一个问题以及官方文档的重要性。</p>
+]]></content>
+      <categories>
+        <category>vim</category>
+      </categories>
+      <tags>
+        <tag>vim插件</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mac环境配置</title>
     <url>/2019/12/15/mac%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h1 id="mac环境配置"><a href="#mac环境配置" class="headerlink" title="mac环境配置"></a>mac环境配置</h1><p>借由这篇文章改变自己的一个环习惯。可能是因为从小就处在这个信息大爆炸的时代，每次遇到问题的时候，总觉得这个问题可以从网上找到答案，更确切的说，总是想着直接百度搜出答案，显然这种行为是不可取的，但是因为这样确实能解决一部分问题，就养成了这个毛病。</p><p>这次是装一个补全插件的时候，遇到了<strong>pyls not found in $PATH</strong>的问题，我又连报错都没细看，直接往搜索框一丢，结果。。。。。绕了大半月都没解决。<br>再之后心想这问题不能一直存在啊，一细看，妈耶是path环境变量的问题，就麻溜给他解决了。</p><a id="more"></a>
@@ -19,6 +55,12 @@
 
 <p>完。</p>
 ]]></content>
+      <categories>
+        <category>Macos</category>
+      </categories>
+      <tags>
+        <tag>mac</tag>
+      </tags>
   </entry>
   <entry>
     <title>半年记</title>
@@ -32,7 +74,7 @@
         <category>杂记</category>
       </categories>
       <tags>
-        <tag>杂技</tag>
+        <tag>杂记</tag>
       </tags>
   </entry>
   <entry>
