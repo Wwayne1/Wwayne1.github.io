@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>apache本地服务器压力测试</title>
+    <url>/2020/01/15/apache%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95/</url>
+    <content><![CDATA[<h1 id="apache服务器本地压力测试"><a href="#apache服务器本地压力测试" class="headerlink" title="apache服务器本地压力测试"></a>apache服务器本地压力测试</h1><h2 id="启动Apache服务器"><a href="#启动Apache服务器" class="headerlink" title="启动Apache服务器"></a>启动Apache服务器</h2><p>由于macos自带Apache服务器，所以这里只需要启动就好了。</p><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apachectl -v <span class="comment">#查看apache版本</span></span><br><span class="line">sudo apachectl start <span class="comment">#启动服务器</span></span><br><span class="line">sudo apachectl stop  <span class="comment">#停止服务器</span></span><br><span class="line"></span><br><span class="line">/etc/apache2/httpd.conf <span class="comment">#配置文件路径</span></span><br><span class="line">/Library/WebServer/Documents/ <span class="comment">#站点根目录</span></span><br></pre></td></tr></table></figure><a id="more"></a>
+  
+
+<p>  启动后即可通过localhost或127.0.0.1访问了。</p>
+<h2 id="安装Webbench压力测试工具"><a href="#安装Webbench压力测试工具" class="headerlink" title="安装Webbench压力测试工具"></a>安装Webbench压力测试工具</h2><p>目前只用过ab(apachebench)和webbench两个压力测试工具，推荐使用webbench。相比于ab，webbench参数相对简单，并且功能强大，不仅支持静态页面和动态页面，还支持对含有SSL对网站进行测试。</p>
+<h3 id="安装说明"><a href="#安装说明" class="headerlink" title="安装说明"></a>安装说明</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">brew install ctags  <span class="comment">#依赖ctags</span></span><br><span class="line"></span><br><span class="line">sudo wget http://www.ha97.com/webbench-1.5.tar.gz</span><br><span class="line">sudo tar -zxvf webbench-1.5.tar.gz</span><br><span class="line"><span class="built_in">cd</span> webbench-1.5</span><br><span class="line">sudo mkdir -pv /usr/<span class="built_in">local</span>/man/man1</span><br><span class="line">sudo make &amp;&amp; sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>ps: 建议对安装指令抱着怀疑的态度去尝试，我在网上看到的教程下载webbench安装包时是没有sudo的，但是不加的话权限不够，是不能完成的。遇到问题，想一想，再试一次。</p>
+<h3 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h3><p><strong>参数说明</strong> </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">webbench [option]... URL</span><br><span class="line">  -f|--force               Don<span class="string">'t wait for reply from server.</span></span><br><span class="line"><span class="string">  -r|--reload              Send reload request - Pragma: no-cache.</span></span><br><span class="line"><span class="string">  -t|--time &lt;sec&gt;          运行测试时间  Run benchmark for &lt;sec&gt; seconds. Default 30.</span></span><br><span class="line"><span class="string">  -p|--proxy &lt;server:port&gt; Use proxy server for request.</span></span><br><span class="line"><span class="string">  -c|--clients &lt;n&gt;         并发数  Run &lt;n&gt; HTTP clients at once. Default one.</span></span><br><span class="line"><span class="string">  -9|--http09              Use HTTP/0.9 style requests.</span></span><br><span class="line"><span class="string">  -1|--http10              Use HTTP/1.0 protocol.</span></span><br><span class="line"><span class="string">  -2|--http11              Use HTTP/1.1 protocol.</span></span><br><span class="line"><span class="string">  --get                    Use GET request method.</span></span><br><span class="line"><span class="string">  --head                   Use HEAD request method.</span></span><br><span class="line"><span class="string">  --options                Use OPTIONS request method.</span></span><br><span class="line"><span class="string">  --trace                  Use TRACE request method.</span></span><br><span class="line"><span class="string">  -?|-h|--help             This information.</span></span><br><span class="line"><span class="string">  -V|--version             Display program version.</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="压测实例"><a href="#压测实例" class="headerlink" title="压测实例"></a>压测实例</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ webbench -c 200 -t 60 http://127.0.0.1/</span><br><span class="line">Webbench - Simple Web Benchmark 1.5</span><br><span class="line">Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.</span><br><span class="line"></span><br><span class="line">Benchmarking: GET http://127.0.0.1/</span><br><span class="line">200 clients, running 60 sec.</span><br><span class="line"></span><br><span class="line">Speed=33479 pages/min, 192784 bytes/sec.</span><br><span class="line">Requests: 32861 susceed, 618 failed.</span><br></pre></td></tr></table></figure>
+
+<p>由数据可得，当并发数为200时，apache已经存在部分连接失败，服务器已经超负荷了</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ webbench -c 50 -t 60 http://127.0.0.1/</span><br><span class="line">Webbench - Simple Web Benchmark 1.5</span><br><span class="line">Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.</span><br><span class="line"></span><br><span class="line">Benchmarking: GET http://127.0.0.1/</span><br><span class="line">50 clients, running 60 sec.</span><br><span class="line"></span><br><span class="line">Speed=32811 pages/min, 192197 bytes/sec.</span><br><span class="line">Requests: 32761 susceed, 50 failed.</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <categories>
+        <category>server</category>
+        <category>毕设</category>
+      </categories>
+  </entry>
+  <entry>
     <title>我的2019</title>
     <url>/2019/12/31/%E6%88%91%E7%9A%842019/</url>
     <content><![CDATA[<h1 id="我的2019"><a href="#我的2019" class="headerlink" title="我的2019"></a>我的2019</h1><p>  现在是2019.12.31.21:42分，我写下了这篇关于我的2019的文章，来讲述下2019我的生活。2019年，我完成了一个学生到实习生的转变，面对世界的态度也有了很大的变化。上半年，有着许多的小确幸，而下半年，发生了我人生中的大事件。年初和一群老友、同学见了面，有些朋友应该算是好久不见了，觉得大家都还是从前的样子，遗憾的是还是有几位朋友一年没见了。这一年家里的房子也装修好了，于我而言，是一件很幸福的事情。慢慢地，我有了赚钱能力，家里也在一步步变好，妈总算有希望能稍微减轻点身上的担子了。今年也是我和憨包的第二个年头了，两个人之间变得越来越熟悉，与之带来的，是趋于平淡的生活。是好事，也是坏事。</p><a id="more"></a>
